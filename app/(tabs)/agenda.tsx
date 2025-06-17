@@ -1,36 +1,15 @@
-import { StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, FlatList } from 'react-native';
 import { Text, View } from '@/components/Themed';
-import { Ionicons } from '@expo/vector-icons';
+import { useReserva } from '../../context/ReservaContext';
 
 export default function TabTwoScreen() {
-  // Dados simulados da agenda do professor
-  const agenda = [
-    {
-      id: '1',
-      horario: '08:00 - 10:00',
-      local: 'Laboratório de Informática 01',
-      disciplina: 'Programação I',
-    },
-    {
-      id: '2',
-      horario: '13:30 - 15:10',
-      local: 'Sala 204 - Bloco B',
-      disciplina: 'Banco de Dados',
-    },
-    {
-      id: '3',
-      horario: '19:00 - 21:00',
-      local: 'Laboratório de Redes',
-      disciplina: 'Redes de Computadores',
-    },
-  ];
+  const { reservas } = useReserva();
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Minha Agenda</Text>
-
       <FlatList
-        data={agenda}
+        data={reservas}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.card}>
@@ -41,11 +20,6 @@ export default function TabTwoScreen() {
         )}
         contentContainerStyle={{ paddingBottom: 100 }}
       />
-
-      <TouchableOpacity style={styles.addButton}>
-        <Ionicons name="add-circle" size={24} color="#fff" />
-        <Text style={styles.addButtonText}>Adicionar Reserva</Text>
-      </TouchableOpacity>
     </View>
   );
 }
