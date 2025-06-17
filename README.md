@@ -1,4 +1,4 @@
-# Sistema de Reservas de Salas de Aulas, Laboratórios, Auditórios e Plenário.
+# Aplicativo de Reservas de Salas de Aulas, Laboratórios, Auditórios e Plenário.
 
 Este projeto tem como objetivo automatizar o processo de reservas de salas de aula e laboratórios dentro da instituição, agilizando o procedimento e reduzindo custos operacionais e tempo gasto nas reservas.
 
