@@ -52,21 +52,21 @@ export default function TabLayout() {
         <Tabs.Screen
           name="agenda"
           options={{
-            title: 'Agenda',
+            title: 'Minhas Reservas',
             tabBarIcon: ({ color }) => <TabBarIcon name="calendar" color={color} />,
           }}
         />
         <Tabs.Screen
           name="reservarEspaco"
           options={{
-            title: 'Reservar espaço',
+            title: 'Reservar',
             tabBarIcon: ({ color }) => <TabBarIcon name="pencil" color={color} />,
           }}
         />
         <Tabs.Screen
           name="perfil"
           options={{
-            title: 'Configrações espaço',
+            title: 'Perfil',
             tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
           }}
         />

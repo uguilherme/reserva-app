@@ -1,21 +1,58 @@
-import { StyleSheet, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useReserva } from '../../context/ReservaContext';
 
 export default function TabTwoScreen() {
-  const { reservas } = useReserva();
+  const { reservas, removerReserva } = useReserva();
+  const [reservaSelecionada, setReservaSelecionada] = useState<string | null>(null);
+
+  const confirmarCancelamento = (id: string) => {
+    Alert.alert(
+      'Cancelar reserva',
+      'Tem certeza que deseja cancelar esta reserva?',
+      [
+        { text: 'Não', style: 'cancel' },
+        {
+          text: 'Sim',
+          style: 'destructive',
+          onPress: () => removerReserva(id),
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  if (reservas.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>
+          Você ainda não reservou nenhum espaço da universidade...
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Minha Agenda</Text>
       <FlatList
         data={reservas}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.cardTitle}>{item.disciplina}</Text>
-            <Text style={styles.cardText}>📅 {item.horario}</Text>
-            <Text style={styles.cardText}>📍 {item.local}</Text>
+            <Text style={styles.cardText}>📚 Curso: {item.curso}</Text>
+            <Text style={styles.cardText}>📅 Data: {item.horario}</Text>
+            <Text style={styles.cardText}>📍 Local: {item.local}</Text>
+            {item.observacoes ? (
+              <Text style={styles.cardText}>📝 Observações: {item.observacoes}</Text>
+            ) : null}
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={() => confirmarCancelamento(item.id)}
+            >
+              <Text style={styles.cancelButtonText}>Cancelar reserva</Text>
+            </TouchableOpacity>
           </View>
         )}
         contentContainerStyle={{ paddingBottom: 100 }}
@@ -25,16 +62,21 @@ export default function TabTwoScreen() {
 }
 
 const styles = StyleSheet.create({
+  emptyContainer: {
+    backgroundColor: '#374198',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 18,
+    textAlign: 'center',
+  },
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingTop: 20,
     backgroundColor: '#374198',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
   },
   card: {
     backgroundColor: '#C4C4C4',
@@ -54,6 +96,18 @@ const styles = StyleSheet.create({
   cardText: {
     fontSize: 16,
     marginBottom: 4,
+  },
+  cancelButton: {
+    marginTop: 10,
+    backgroundColor: '#ff4444',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   addButton: {
     position: 'absolute',
