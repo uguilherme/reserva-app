@@ -40,12 +40,20 @@ export default function TabTwoScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>{item.disciplina}</Text>
-            <Text style={styles.cardText}>📚 Curso: {item.curso}</Text>
-            <Text style={styles.cardText}>📅 Data: {item.horario}</Text>
-            <Text style={styles.cardText}>📍 Local: {item.local}</Text>
+            <Text style={styles.cardTitle}>{item.curso}</Text>
+            <Text style={styles.cardText}>
+              <Text style={{ color: '#000' }}>📚 Disciplina:</Text> {item.disciplina}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={{ color: '#000' }}>📅 Data:</Text> {item.horario}
+            </Text>
+            <Text style={styles.cardText}>
+              <Text style={{ color: '#000' }}>📍 Local:</Text> {item.local}
+            </Text>
             {item.observacoes ? (
-              <Text style={styles.cardText}>📝 Observações: {item.observacoes}</Text>
+              <Text style={styles.cardText}>
+                <Text style={{ color: '#000' }}>📝 Observações:</Text> {item.observacoes}
+              </Text>
             ) : null}
             <TouchableOpacity
               style={styles.cancelButton}
@@ -79,7 +87,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#374198',
   },
   card: {
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#2538db',
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,

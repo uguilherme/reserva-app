@@ -7,7 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useReserva } from '../../context/ReservaContext';
 
 export default function TabTwoScreen() {
-  const { adicionarReserva } = useReserva();
+  const { adicionarReserva, reservas } = useReserva();
 
   const [dataReserva, setDataReserva] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -39,6 +39,10 @@ export default function TabTwoScreen() {
   const [showTipoLocalPicker, setShowTipoLocalPicker] = useState(false);
   const [tempTipoLocal, setTempTipoLocal] = useState('');
 
+  const [repetirSemanal, setRepetirSemanal] = useState('');
+  const [showRepetirPicker, setShowRepetirPicker] = useState(false);
+  const [tempRepetir, setTempRepetir] = useState('');
+
   const horariosPorTurno: { [key: string]: string[] } = {
     Matutino: ['07:30', '08:30', '09:30', '10:30', '11:30'],
     Vespertino: ['13:00', '14:00', '15:00', '16:00', '17:00'],
@@ -68,33 +72,125 @@ export default function TabTwoScreen() {
     ],
   };
 
+  // Função para obter todas as datas do mesmo dia da semana até o fim do semestre
+  function getDatasRepetidas(dataInicial: Date) {
+    // Definição correta dos períodos dos semestres
+    const ano = dataInicial.getFullYear();
+    const primeiroSemestreInicio = new Date(ano, 1, 1); // 01/02
+    const primeiroSemestreFim = new Date(ano, 5, 30);   // 30/06
+    const segundoSemestreInicio = new Date(ano, 6, 14); // 14/07
+    const segundoSemestreFim = new Date(ano, 11, 17);   // 17/12
+
+    let dataFim: Date;
+    if (dataInicial >= primeiroSemestreInicio && dataInicial <= primeiroSemestreFim) {
+      dataFim = primeiroSemestreFim;
+    } else if (dataInicial >= segundoSemestreInicio && dataInicial <= segundoSemestreFim) {
+      dataFim = segundoSemestreFim;
+    } else {
+      // Fora do período letivo, retorna só a data inicial
+      return [dataInicial];
+    }
+
+    const datas: Date[] = [];
+    let data = new Date(dataInicial);
+    while (data <= dataFim) {
+      datas.push(new Date(data));
+      data.setDate(data.getDate() + 7);
+    }
+    return datas;
+  }
+
   const handleAdicionarReserva = () => {
     if (!disciplina || !curso || !turno || !horaInicial || !horaFinal || !tipoLocal || !local) {
       setErro('Preencha todos os campos obrigatórios.');
       return;
     }
+
+    // Validação: não permitir reserva duplicada para o mesmo local, data e horário
+    const dataFormatada = dataReserva.toLocaleDateString();
+    const localFormatado = `${local} (${tipoLocal})`;
+
+    const reservasMesmoLocalData = reservas.filter(
+      (r) =>
+        r.local === localFormatado &&
+        r.horario.endsWith(`(${dataFormatada})`)
+    );
+
+    const conflito = reservasMesmoLocalData.find((r) => {
+      // Extrai horários do formato "07:30 - 08:30 (dd/mm/yyyy)"
+      const match = r.horario.match(/^(\d{2}:\d{2}) - (\d{2}:\d{2})/);
+      if (!match) return false;
+      const [_, ini, fim] = match;
+      return horariosSobrepostos(horaInicial, horaFinal, ini, fim);
+    });
+
+    if (conflito) {
+      // Extrai horários do conflito para mensagem
+      const match = conflito.horario.match(/^(\d{2}:\d{2}) - (\d{2}:\d{2})/);
+      const horarioOcupado = match ? `${match[1]} às ${match[2]}` : 'horário já reservado';
+      setErro(`Este espaço já possui reserva das ${horarioOcupado} nesta data. Escolha outro horário.`);
+      return;
+    }
+
     setErro('');
-    const novaReserva = {
-      id: String(Date.now()),
-      disciplina,
-      curso,
-      horario: `${horaInicial} - ${horaFinal} (${dataReserva.toLocaleDateString()})`,
-      local: `${local} (${tipoLocal})`,
-      observacoes,
-      professor: '', // Adicione um valor padrão ou obtenha do formulário se necessário
-    };
-    adicionarReserva(novaReserva);
-    setCurso('');
-    setDisciplina('');
-    setHoraInicial('');
-    setHoraFinal('');
-    setTurno('');
-    setTempTurno('');
-    setDataReserva(new Date());
-    setTipoLocal('');
-    setLocal('');
-    setTempLocal('');
-    setObservacoes('');
+
+    const datasParaReservar = repetirSemanal === 'Sim' ? getDatasRepetidas(dataReserva) : [dataReserva];
+
+    let reservasCriadas = 0;
+    let reservasConflito = 0;
+
+    datasParaReservar.forEach((data) => {
+      const dataFormatada = data.toLocaleDateString();
+      const localFormatado = `${local} (${tipoLocal})`;
+      const horarioFormatado = `${horaInicial} - ${horaFinal} (${dataFormatada})`;
+
+      const reservasMesmoLocalData = reservas.filter(
+        (r) =>
+          r.local === localFormatado &&
+          r.horario.endsWith(`(${dataFormatada})`)
+      );
+      const conflito = reservasMesmoLocalData.find((r) => {
+        const match = r.horario.match(/^(\d{2}:\d{2}) - (\d{2}:\d{2})/);
+        if (!match) return false;
+        const [_, ini, fim] = match;
+        return horariosSobrepostos(horaInicial, horaFinal, ini, fim);
+      });
+
+      if (!conflito) {
+        const novaReserva = {
+          id: String(Date.now()) + Math.random() + dataFormatada, // Inclua a data para garantir unicidade
+          disciplina,
+          curso,
+          horario: horarioFormatado,
+          local: localFormatado,
+          observacoes,
+          professor: '',
+        };
+        adicionarReserva(novaReserva);
+        reservasCriadas++;
+      } else {
+        reservasConflito++;
+      }
+    });
+
+    if (reservasCriadas > 0) {
+      setErro('');
+      setCurso('');
+      setDisciplina('');
+      setHoraInicial('');
+      setHoraFinal('');
+      setTurno('');
+      setTempTurno('');
+      setDataReserva(new Date());
+      setTipoLocal('');
+      setLocal('');
+      setTempLocal('');
+      setObservacoes('');
+      setRepetirSemanal('');
+    }
+    if (reservasConflito > 0) {
+      setErro(`Algumas datas não foram reservadas por conflito de horário.`);
+    }
   };
 
   // Handler para DateTimePicker cross-platform
@@ -103,6 +199,13 @@ export default function TabTwoScreen() {
   };
 
   const confirmarData = () => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    if (tempDate < hoje) {
+      setErro('Não é possível selecionar uma data anterior à data atual.');
+      setShowDatePicker(false);
+      return;
+    }
     setDataReserva(tempDate);
     setShowDatePicker(false);
   };
@@ -131,6 +234,20 @@ export default function TabTwoScreen() {
     setShowLocalPicker(false);
   };
 
+  function horariosSobrepostos(horaIni1: string, horaFim1: string, horaIni2: string, horaFim2: string) {
+    // Converte "07:30" em minutos
+    const toMin = (h: string) => {
+      const [hh, mm] = h.split(':').map(Number);
+      return hh * 60 + mm;
+    };
+    const ini1 = toMin(horaIni1);
+    const fim1 = toMin(horaFim1);
+    const ini2 = toMin(horaIni2);
+    const fim2 = toMin(horaFim2);
+    // Retorna true se houver sobreposição
+    return ini1 < fim2 && ini2 < fim1;
+  }
+
   return (
     <ScrollView
       style={styles.container}
@@ -152,10 +269,45 @@ export default function TabTwoScreen() {
             mode="date"
             display={Platform.OS === 'ios' ? 'spinner' : 'default'}
             onChange={onChangeDate}
-            minimumDate={new Date()}
+            minimumDate={new Date()} // <-- já está correto!
           />
           <TouchableOpacity style={styles.confirmButton} onPress={confirmarData}>
             <Text style={styles.confirmButtonText}>Confirmar Data</Text>
+          </TouchableOpacity>
+        </RNView>
+      )}
+
+      {/* Repetir semanalmente */}
+      <Text style={styles.label}>Repetir semanalmente?</Text>
+      <TouchableOpacity
+        onPress={() => { setShowRepetirPicker(true); setTempRepetir(repetirSemanal); }}
+        style={styles.datePicker}
+      >
+        <Text style={styles.dateText}>
+          {repetirSemanal ? repetirSemanal : 'Selecione se deseja repetir'}
+        </Text>
+      </TouchableOpacity>
+      {showRepetirPicker && (
+        <RNView style={styles.datePickerModal}>
+          <Picker
+            selectedValue={tempRepetir}
+            onValueChange={(itemValue) => setTempRepetir(itemValue)}
+            style={styles.picker}
+            dropdownIconColor="#374198"
+          >
+            <Picker.Item label="Selecione" value="" />
+            <Picker.Item label="Sim" value="Sim" />
+            <Picker.Item label="Não" value="Não" />
+          </Picker>
+          <TouchableOpacity
+            style={styles.confirmButton}
+            onPress={() => {
+              setRepetirSemanal(tempRepetir);
+              setShowRepetirPicker(false);
+            }}
+            disabled={!tempRepetir}
+          >
+            <Text style={styles.confirmButtonText}>Confirmar</Text>
           </TouchableOpacity>
         </RNView>
       )}
