@@ -72,9 +72,7 @@ export default function TabTwoScreen() {
     ],
   };
 
-  // Função para obter todas as datas do mesmo dia da semana até o fim do semestre
   function getDatasRepetidas(dataInicial: Date) {
-    // Definição correta dos períodos dos semestres
     const ano = dataInicial.getFullYear();
     const primeiroSemestreInicio = new Date(ano, 1, 1); // 01/02
     const primeiroSemestreFim = new Date(ano, 5, 30);   // 30/06
@@ -87,7 +85,6 @@ export default function TabTwoScreen() {
     } else if (dataInicial >= segundoSemestreInicio && dataInicial <= segundoSemestreFim) {
       dataFim = segundoSemestreFim;
     } else {
-      // Fora do período letivo, retorna só a data inicial
       return [dataInicial];
     }
 
@@ -106,7 +103,6 @@ export default function TabTwoScreen() {
       return;
     }
 
-    // Validação: não permitir reserva duplicada para o mesmo local, data e horário
     const dataFormatada = dataReserva.toLocaleDateString();
     const localFormatado = `${local} (${tipoLocal})`;
 
@@ -117,7 +113,6 @@ export default function TabTwoScreen() {
     );
 
     const conflito = reservasMesmoLocalData.find((r) => {
-      // Extrai horários do formato "07:30 - 08:30 (dd/mm/yyyy)"
       const match = r.horario.match(/^(\d{2}:\d{2}) - (\d{2}:\d{2})/);
       if (!match) return false;
       const [_, ini, fim] = match;
@@ -125,7 +120,6 @@ export default function TabTwoScreen() {
     });
 
     if (conflito) {
-      // Extrai horários do conflito para mensagem
       const match = conflito.horario.match(/^(\d{2}:\d{2}) - (\d{2}:\d{2})/);
       const horarioOcupado = match ? `${match[1]} às ${match[2]}` : 'horário já reservado';
       setErro(`Este espaço já possui reserva das ${horarioOcupado} nesta data. Escolha outro horário.`);
@@ -158,7 +152,7 @@ export default function TabTwoScreen() {
 
       if (!conflito) {
         const novaReserva = {
-          id: String(Date.now()) + Math.random() + dataFormatada, // Inclua a data para garantir unicidade
+          id: String(Date.now()) + Math.random() + dataFormatada, 
           disciplina,
           curso,
           horario: horarioFormatado,
@@ -235,7 +229,7 @@ export default function TabTwoScreen() {
   };
 
   function horariosSobrepostos(horaIni1: string, horaFim1: string, horaIni2: string, horaFim2: string) {
-    // Converte "07:30" em minutos
+
     const toMin = (h: string) => {
       const [hh, mm] = h.split(':').map(Number);
       return hh * 60 + mm;
@@ -244,7 +238,7 @@ export default function TabTwoScreen() {
     const fim1 = toMin(horaFim1);
     const ini2 = toMin(horaIni2);
     const fim2 = toMin(horaFim2);
-    // Retorna true se houver sobreposição
+
     return ini1 < fim2 && ini2 < fim1;
   }
 
@@ -269,7 +263,7 @@ export default function TabTwoScreen() {
             mode="date"
             display={Platform.OS === 'ios' ? 'spinner' : 'default'}
             onChange={onChangeDate}
-            minimumDate={new Date()} // <-- já está correto!
+            minimumDate={new Date()}
           />
           <TouchableOpacity style={styles.confirmButton} onPress={confirmarData}>
             <Text style={styles.confirmButtonText}>Confirmar Data</Text>
@@ -519,7 +513,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 24,
-    backgroundColor: '#111',
+    backgroundColor: '#24284d',
   },
   title: {
     fontSize: 28,
@@ -592,7 +586,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   addButton: {
-    backgroundColor: '#2d6cdf',
+    backgroundColor: '#374198',
     paddingVertical: 14,
     paddingHorizontal: 28,
     borderRadius: 30,

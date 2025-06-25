@@ -191,7 +191,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 24,
-    backgroundColor: '#374198',
+    backgroundColor: '#24284d',
     flexGrow: 1,
   },
   titulo: {
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   atalhosContainer: {
-    backgroundColor: '#374198',
+    backgroundColor: '#24284d',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
