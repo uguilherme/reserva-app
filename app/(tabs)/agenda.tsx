@@ -42,17 +42,17 @@ export default function TabTwoScreen() {
           <View style={styles.card}>
             <Text style={styles.cardTitle}>{item.curso}</Text>
             <Text style={styles.cardText}>
-              <Text style={{ color: '#000' }}>📚 Disciplina:</Text> {item.disciplina}
+              <Text style={{ color: '#fff' }}>📚 Disciplina:</Text> {item.disciplina}
             </Text>
             <Text style={styles.cardText}>
-              <Text style={{ color: '#000' }}>📅 Data:</Text> {item.horario}
+              <Text style={{ color: '#fff' }}>📅 Data:</Text> {item.horario}
             </Text>
             <Text style={styles.cardText}>
-              <Text style={{ color: '#000' }}>📍 Local:</Text> {item.local}
+              <Text style={{ color: '#fff' }}>📍 Local:</Text> {item.local}
             </Text>
             {item.observacoes ? (
               <Text style={styles.cardText}>
-                <Text style={{ color: '#000' }}>📝 Observações:</Text> {item.observacoes}
+                <Text style={{ color: '#fff' }}>📝 Observações:</Text> {item.observacoes}
               </Text>
             ) : null}
             <TouchableOpacity
@@ -70,47 +70,57 @@ export default function TabTwoScreen() {
 }
 
 const styles = StyleSheet.create({
-  emptyContainer: {
-    backgroundColor: '#374198',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 18,
-    textAlign: 'center',
-  },
   container: {
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 20,
-    backgroundColor: '#374198',
+    backgroundColor: '#f4f4f4',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#111',
+    paddingHorizontal: 20,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: '500',
   },
   card: {
-    backgroundColor: '#2538db',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
+    backgroundColor: '#222',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 4,
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: '#fff',
     marginBottom: 8,
   },
   cardText: {
     fontSize: 16,
+    color: '#6b6868',
     marginBottom: 4,
   },
   cancelButton: {
-    marginTop: 10,
-    backgroundColor: '#ff4444',
+    marginTop: 12,
+    backgroundColor: '#e94f4f',
     paddingVertical: 10,
-    borderRadius: 8,
+    borderRadius: 20,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   cancelButtonText: {
     color: '#fff',
@@ -120,20 +130,19 @@ const styles = StyleSheet.create({
   addButton: {
     position: 'absolute',
     bottom: 30,
-    right: 20,
     left: 20,
-    backgroundColor: '#0077ff',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    right: 20,
+    backgroundColor: '#374198',
+    paddingVertical: 14,
     borderRadius: 30,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'center',
     elevation: 5,
   },
   addButtonText: {
     color: '#fff',
-    fontWeight: 'bold',
     fontSize: 16,
+    fontWeight: 'bold',
   },
 });

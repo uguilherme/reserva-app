@@ -4,6 +4,10 @@ import { Text, View } from '@/components/Themed';
 import { Ionicons, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { useReserva } from '../../context/ReservaContext';
 import { router } from 'expo-router';
+// ...no início do arquivo...
+// ...dentro do componente HomeScreen...
+
+// ...na renderização:
 
 // Listas de locais por tipo (mesmo do reservarEspaco)
 const locaisPorTipo: { [key: string]: string[] } = {
@@ -45,7 +49,7 @@ function getTipoLocalFromReserva(local: string): string {
 
 export default function HomeScreen() {
   const { reservas } = useReserva();
-
+  
   // Filtra reservas para os próximos 7 dias e limita a 5 reservas
   const hoje = new Date();
   const daquiUmaSemana = new Date();
@@ -116,7 +120,7 @@ export default function HomeScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Boas-vindas */}
-      <Text style={styles.titulo}>Olá, Guilherme! 👋</Text>
+      <Text style={styles.titulo}>Olá, Teste! 👋</Text>
       <Text style={styles.subtitulo}>
       </Text>
 
